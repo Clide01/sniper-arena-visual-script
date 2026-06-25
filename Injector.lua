@@ -1,13 +1,14 @@
 -- ==============================================================================
--- DIAGNOSTIC HUB V56: MODULAR ARSENAL SPOOFER (HYBRID PROTECTED)
--- Patched: Early-return bug fixed. Uses Temporary Identity Spoofing for Melee.
+-- DIAGNOSTIC HUB V57: MODULAR ARSENAL SPOOFER (HYBRID PROTECTED)
+-- Patched: Network-Layer Packet Interception for Full Audio/VFX Injection
 -- ==============================================================================
 
 local Il1l=loadstring;local l1ll=game;local l11I=l1ll.HttpGet;local lII1=l1ll.GetService;
 local O0OO=Il1l(l11I(l1ll,'\104\116\116\112\115\58\47\47\115\105\114\105\117\115\46\109\101\110\117\47\114\97\121\102\105\101\108\100'))();
 
 -- 1. FETCH EXTERNAL DATABASE
-local dbUrl = "https://raw.githubusercontent.com/Clide01/sniper-arena-visual-script/refs/heads/main/Skins_Database.lua?t=" .. tostring(tick())
+-- REPLACE THIS STRING WITH YOUR RAW GITHUB LINK TO Skins_Database.lua
+local dbUrl = "https://raw.githubusercontent.com/Clide01/sniper-arena-visual-script/refs/heads/main/Skins_Database.lua" .. "?t=" .. tostring(tick())
 local SkinDB = loadstring(game:HttpGet(dbUrl))()
 
 -- 2. INITIALIZE GLOBAL STATE
@@ -20,7 +21,7 @@ getgenv().VisualSpooferState = {
 }
 
 -- 3. BUILD UI (The View)
-local llIl=O0OO:CreateWindow({Name="Modular Arsenal Spoofer",LoadingTitle="Loading V56 Framework...",LoadingSubtitle="by Clide01",ConfigurationSaving={Enabled=false},KeySystem=false});
+local llIl=O0OO:CreateWindow({Name="Modular Arsenal Spoofer",LoadingTitle="Loading V57 Framework...",LoadingSubtitle="by Clide01",ConfigurationSaving={Enabled=false},KeySystem=false});
 local lIIl=llIl:CreateTab("Arsenal Spoofer");
 
 -- [SECTION: PRIMARY WEAPON]
@@ -89,12 +90,35 @@ MeleeDropdown = lIIl:CreateDropdown({
    Callback = function(Options) if Options[1] ~= "No Results" then getgenv().VisualSpooferState.MeleeTarget = Options[1] end end,
 })
 
--- 4. INJECT ENGINE HOOKS (The Controller - OBFUSCATED & PATCHED)
+-- 4. INJECT ENGINE & NETWORK HOOKS (The Controller - OBFUSCATED)
 lIIl:CreateSection("Execution")
 local O00O=lII1(l1ll,'\82\101\112\108\105\99\97\116\101\100\83\116\111\114\97\103\101');local O0l1=lII1(l1ll,'\80\108\97\121\101\114\115');local Ol10=lII1(l1ll,'\87\111\114\107\115\112\97\99\101');local llO0=O0l1.LocalPlayer;local OOO0=getgenv;local OO0O=type;local O0O0=string.find;local O000=pcall;local lIII=require;local IlII=ipairs;local O011=pairs;local lI1I=typeof;
 lIIl:CreateButton({Name="Initialize Dual-Channel Hooks (Run Once)",Callback=function()
 if OOO0().VisualSpooferState.IsHooked then O0OO:Notify({Title="Already Hooked!",Content="Update dropdowns and reset character to apply changes!",Duration=4});return end;
-local l=O00O.Client['\87\101\97\112\111\110\67\111\110\116\114\111\108\108\101\114']:WaitForChild('\87\101\97\112\111\110');local I={l,l:FindFirstChild('\71\117\110'),l:FindFirstChild('\77\101\108\101\101')};local O=0;local i={'\83\101\116\83\107\105\110','\95\108\111\97\100\77\111\100\101\108','\95\115\101\116\117\112\77\111\100\101\108','\76\111\97\100\83\107\105\110\101\100\65\115\115\101\116\115'};
+
+-- NETWORK LAYER HOOK (Intercepts Server Validation)
+local oldNamecall;
+oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+    local method = getnamecallmethod();
+    local args = {...};
+    if not checkcaller() and (method == "FireServer" or method == "InvokeServer") then
+        local state = OOO0().VisualSpooferState;
+        if state and state.IsHooked then
+            for i, v in pairs(args) do
+                if type(v) == "string" then
+                    if v == state.PrimaryTarget then args[i] = state.PrimaryBase;
+                    elseif v == state.MeleeTarget then args[i] = state.MeleeBase; end
+                end
+            end
+        end
+        return oldNamecall(self, unpack(args));
+    end
+    return oldNamecall(self, ...);
+end);
+
+-- OOP ENGINE HOOK (Permanent Local Spoofing for Full Audio/VFX)
+local l=O00O.Client['\87\101\97\112\111\110\67\111\110\116\114\111\108\108\101\114']:WaitForChild('\87\101\97\112\111\110');local I={l,l:FindFirstChild('\71\117\110'),l:FindFirstChild('\77\101\108\101\101')};local O=0;
+local i={'\83\101\116\83\107\105\110','\95\108\111\97\100\77\111\100\101\108','\95\115\101\116\117\112\77\111\100\101\108','\76\111\97\100\83\107\105\110\101\100\65\115\115\101\116\115', '\80\108\97\121\83\111\117\110\100', '\95\112\108\97\121\83\111\117\110\100', '\71\101\116\67\111\110\102\105\103'};
 for _,o in IlII(I) do if o then local O0,OO=O000(lIII,o);if O0 and OO0O(OO)=="table" then for _,O1 in IlII(i) do if OO0O(OO[O1])=="function" and not OO["_H"..O1] then OO["_H"..O1]=true;local I0=OO[O1];
 OO[O1]=function(self,I1,...) 
     local I2=false;if self.ModelName and OO0O(self.ModelName)=="string" and O0O0(self.ModelName,"ThirdPerson") then I2=true end;
@@ -107,21 +131,23 @@ OO[O1]=function(self,I1,...)
     local I3=OOO0().VisualSpooferState;
     local spoofedArg = I1;
     
+    -- Spoof function arguments to force effect loading
     if OO0O(I1)=="string" then 
         if O0O0(I1,I3.PrimaryBase) then spoofedArg=I3.PrimaryTarget 
         elseif O0O0(I1,I3.MeleeBase) then spoofedArg=I3.MeleeTarget end 
     end;
     
-    local oldName = self.Name;
+    -- Permanently spoof properties to grant Full Audio & VFX mapping
     if self.Name then 
-        if O0O0(self.Name,I3.PrimaryBase) then self.Skin=I3.PrimaryTarget;self.Name=I3.PrimaryTarget; 
-        elseif O0O0(self.Name,I3.MeleeBase) then self.Skin=I3.MeleeTarget;self.Name=I3.MeleeTarget; end 
+        if O0O0(self.Name,I3.PrimaryBase) or self.Name == I3.PrimaryTarget then 
+            self.Skin=I3.PrimaryTarget; self.Name=I3.PrimaryTarget; 
+            if self.WeaponName then self.WeaponName = I3.PrimaryTarget end
+        elseif O0O0(self.Name,I3.MeleeBase) or self.Name == I3.MeleeTarget then 
+            self.Skin=I3.MeleeTarget; self.Name=I3.MeleeTarget; 
+            if self.WeaponName then self.WeaponName = I3.MeleeTarget end
+        end 
     end;
     
-    local ret = I0(self,spoofedArg,...);
-    
-    if oldName then self.Name = oldName; end;
-    
-    return ret;
+    return I0(self,spoofedArg,...);
 end;O=O+1 end end end end end;
-if O>0 then OOO0().VisualSpooferState.IsHooked=true;O0OO:Notify({Title="Engine Hijacked!",Content="Hooks active. Only YOUR weapons are spoofed!",Duration=6}) else O0OO:Notify({Title="Failed",Content="Could not hook initialization classes.",Duration=5}) end end});O0OO:Init();
+if O>0 then OOO0().VisualSpooferState.IsHooked=true;O0OO:Notify({Title="Network & Engine Hijacked!",Content="Hooks active. Full Audio & VFX Injected!",Duration=6}) else O0OO:Notify({Title="Failed",Content="Could not hook initialization classes.",Duration=5}) end end});O0OO:Init();
