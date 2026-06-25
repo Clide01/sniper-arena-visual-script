@@ -8,7 +8,7 @@ local O0OO=Il1l(l11I(l1ll,'\104\116\116\112\115\58\47\47\115\105\114\105\117\115
 
 -- 1. FETCH EXTERNAL DATABASE
 -- REPLACE THIS STRING WITH YOUR RAW GITHUB LINK TO Skins_Database.lua
-local dbUrl = "https://raw.githubusercontent.com/Clide01/sniper-arena-visual-script/refs/heads/main/Skins_Database.lua" .. "?t=" .. tostring(tick())
+local dbUrl = "https://raw.githubusercontent.com/Clide01/sniper-arena-vibecoded-visual-script/refs/heads/main/Skins_Database.lua" .. "?t=" .. tostring(tick())
 local SkinDB = loadstring(game:HttpGet(dbUrl))()
 
 -- 2. INITIALIZE GLOBAL STATE
