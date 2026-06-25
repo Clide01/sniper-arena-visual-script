@@ -1,14 +1,14 @@
 -- ==============================================================================
--- DIAGNOSTIC HUB V53: MODULAR ARSENAL SPOOFER (HYBRID PROTECTED)
--- Patched: Removed broken IsLocalWeapon filter. Uses pure ThirdPerson bypass.
+-- DIAGNOSTIC HUB V54: MODULAR ARSENAL SPOOFER (HYBRID PROTECTED)
+-- Added: Dynamic Custom Search Bars for Dropdowns
 -- ==============================================================================
 
 local Il1l=loadstring;local l1ll=game;local l11I=l1ll.HttpGet;local lII1=l1ll.GetService;
 local O0OO=Il1l(l11I(l1ll,'\104\116\116\112\115\58\47\47\115\105\114\105\117\115\46\109\101\110\117\47\114\97\121\102\105\101\108\100'))();
 
--- 1. FETCH EXTERNAL DATABASE (The Model)
--- Dynamically fetches from GitHub, bypassing cache to ensure instant updates
-local dbUrl = "https://raw.githubusercontent.com/Clide01/sniper-arena-visual-script/refs/heads/main/Skins_Database.lua?t=" .. tostring(tick())
+-- 1. FETCH EXTERNAL DATABASE
+-- REPLACE THIS STRING WITH YOUR RAW GITHUB LINK TO Skins_Database.lua
+local dbUrl = "https://raw.githubusercontent.com/Clide01/sniper-arena-visual-script/refs/heads/main/Skins_Database.lua" .. "?t=" .. tostring(tick())
 local SkinDB = loadstring(game:HttpGet(dbUrl))()
 
 -- 2. INITIALIZE GLOBAL STATE
@@ -21,10 +21,14 @@ getgenv().VisualSpooferState = {
 }
 
 -- 3. BUILD UI (The View)
-local llIl=O0OO:CreateWindow({Name="Modular Arsenal Spoofer",LoadingTitle="Loading V53 Framework...",LoadingSubtitle="by Clide01",ConfigurationSaving={Enabled=false},KeySystem=false});
+local llIl=O0OO:CreateWindow({Name="Modular Arsenal Spoofer",LoadingTitle="Loading V54 Framework...",LoadingSubtitle="by Clide01",ConfigurationSaving={Enabled=false},KeySystem=false});
 local lIIl=llIl:CreateTab("Arsenal Spoofer");
 
+-- ==============================================================================
+-- PRIMARY SECTION WITH SEARCH
+-- ==============================================================================
 lIIl:CreateSection("Primary Weapon")
+
 lIIl:CreateDropdown({
    Name = "Equipped Primary (Base)",
    Options = SkinDB.PrimaryBases,
@@ -32,15 +36,42 @@ lIIl:CreateDropdown({
    MultipleOptions = false,
    Callback = function(Options) getgenv().VisualSpooferState.PrimaryBase = Options[1] end,
 })
-lIIl:CreateDropdown({
+
+local PrimaryDropdown -- Declare variable early so the search input can access it
+lIIl:CreateInput({
+   Name = "Search Primary Skins",
+   PlaceholderText = "Type to filter skins...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+       local filtered = {}
+       local query = string.lower(Text)
+       for _, skin in ipairs(SkinDB.PrimarySkins) do
+           if string.find(string.lower(skin), query) then
+               table.insert(filtered, skin)
+           end
+       end
+       if #filtered == 0 then table.insert(filtered, "No Results Found") end
+       if PrimaryDropdown then PrimaryDropdown:Refresh(filtered, true) end
+   end,
+})
+
+PrimaryDropdown = lIIl:CreateDropdown({
    Name = "Target Primary (Skin)",
    Options = SkinDB.PrimarySkins,
    CurrentOption = {getgenv().VisualSpooferState.PrimaryTarget},
    MultipleOptions = false,
-   Callback = function(Options) getgenv().VisualSpooferState.PrimaryTarget = Options[1] end,
+   Callback = function(Options) 
+       if Options[1] ~= "No Results Found" then
+           getgenv().VisualSpooferState.PrimaryTarget = Options[1] 
+       end
+   end,
 })
 
+-- ==============================================================================
+-- MELEE SECTION WITH SEARCH
+-- ==============================================================================
 lIIl:CreateSection("Melee Weapon")
+
 lIIl:CreateDropdown({
    Name = "Equipped Melee (Base)",
    Options = SkinDB.MeleeBases,
@@ -48,15 +79,40 @@ lIIl:CreateDropdown({
    MultipleOptions = false,
    Callback = function(Options) getgenv().VisualSpooferState.MeleeBase = Options[1] end,
 })
-lIIl:CreateDropdown({
+
+local MeleeDropdown
+lIIl:CreateInput({
+   Name = "Search Melee Skins",
+   PlaceholderText = "Type to filter skins...",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+       local filtered = {}
+       local query = string.lower(Text)
+       for _, skin in ipairs(SkinDB.MeleeSkins) do
+           if string.find(string.lower(skin), query) then
+               table.insert(filtered, skin)
+           end
+       end
+       if #filtered == 0 then table.insert(filtered, "No Results Found") end
+       if MeleeDropdown then MeleeDropdown:Refresh(filtered, true) end
+   end,
+})
+
+MeleeDropdown = lIIl:CreateDropdown({
    Name = "Target Melee (Skin)",
    Options = SkinDB.MeleeSkins,
    CurrentOption = {getgenv().VisualSpooferState.MeleeTarget},
    MultipleOptions = false,
-   Callback = function(Options) getgenv().VisualSpooferState.MeleeTarget = Options[1] end,
+   Callback = function(Options) 
+       if Options[1] ~= "No Results Found" then
+           getgenv().VisualSpooferState.MeleeTarget = Options[1] 
+       end
+   end,
 })
 
+-- ==============================================================================
 -- 4. INJECT ENGINE HOOKS (The Controller - OBFUSCATED & PATCHED)
+-- ==============================================================================
 lIIl:CreateSection("Execution")
 local O00O=lII1(l1ll,'\82\101\112\108\105\99\97\116\101\100\83\116\111\114\97\103\101');local O0l1=lII1(l1ll,'\80\108\97\121\101\114\115');local Ol10=lII1(l1ll,'\87\111\114\107\115\112\97\99\101');local llO0=O0l1.LocalPlayer;local OOO0=getgenv;local OO0O=type;local O0O0=string.find;local O000=pcall;local lIII=require;local IlII=ipairs;local O011=pairs;
 lIIl:CreateButton({Name="Initialize Dual-Channel Hooks (Run Once)",Callback=function()
