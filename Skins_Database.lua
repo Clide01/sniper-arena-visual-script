@@ -61,6 +61,7 @@ return {
         "Exotic.RGB.NeonCore.Glove",
         "Exotic.RGB.NeonCore.Wakizashi",
         "Exotic.RGB.ScalySawTeeth",
+        "Exotic.StarLordBlue.Glove",
         "Exotic.RGB.Starry.Axe",
         "Exotic.RGB.Starry.Bayonet_M9",
         "Exotic.RGB.Starry.ButterflyKnife",
