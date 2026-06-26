@@ -61,7 +61,6 @@ return {
         "Exotic.RGB.NeonCore.Glove",
         "Exotic.RGB.NeonCore.Wakizashi",
         "Exotic.RGB.ScalySawTeeth",
-        "Exotic.StarLordBlue.Glove",
         "Exotic.RGB.Starry.Axe",
         "Exotic.RGB.Starry.Bayonet_M9",
         "Exotic.RGB.Starry.ButterflyKnife",
@@ -72,6 +71,11 @@ return {
         "Exotic.RGB.Steam.Bayonet_M9",
         "Exotic.RGB.Steam.Glove",
         "Exotic.RGB.Watcher.Glove",
-        "Exotic.RGB.Watcher.Karambit"
+        "Exotic.RGB.Watcher.Karambit",
+        "Exotic.Starlord.Glove",
+        "Exotic.StarlordGray.Glove",
+        "Exotic.StarlordBlue.Glove",
+        "Exotic.StarlordRed.Glove",
+        "Exotic.Umbra.Glove"
     }
 }
